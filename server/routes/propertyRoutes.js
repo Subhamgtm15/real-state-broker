@@ -1,80 +1,70 @@
 import express from "express"
 import authMiddleware from "../middlewares/auth.js"
+import properties from "../data/properties.js"
+import favourites from "../data/favourites.js"
+
 const router = express.Router()
 
-const properties = [
-  {
-    id: 1,
-    title: "Apartment in Kathmandu",
-    location: "Baneshwor",
-    price: 8000000
-  },
-  {
-    id: 2,
-    title: "House in Lalitpur",
-    location: "Jawalakhel",
-    price: 12000000
-  },
-  {
-    id: 3,
-    title: "Flat in Bhaktapur",
-    location: "Suryabinayak",
-    price: 6000000
-  },
-  {
-    id: 4,
-    title: "Villa in Pokhara",
-    location: "Lakeside",
-    price: 15000000
-  }
-]
-
-//
-const favourites = []
-
+// Get all properties
 router.get("/", (req, res) => {
   return res.status(200).json(properties)
 })
 
+// Add to favourites
 router.post("/:id/favourite", authMiddleware, (req, res) => {
   const userId = req.user.id
   const propertyId = Number(req.params.id)
 
-  //check property exists
   const property = properties.find(p => p.id === propertyId)
 
   if (!property) {
     return res.status(404).json({ message: "Property not found" })
   }
 
-  //check duplicate
-  const alreadyFavourite = favourites.find(fav => fav.userId === userId && fav.propertyId === propertyId)
+  const alreadyFavourite = favourites.find(
+    fav => fav.userId === userId && fav.propertyId === propertyId
+  )
 
   if (alreadyFavourite) {
     return res.status(400).json({ message: "Already in favourites" })
   }
 
-  //save
   favourites.push({ userId, propertyId })
-  return res.status(201).json({message: "Added to favourites",favourite: { userId, propertyId }})
+
+  return res.status(201).json({ message: "Added to favourites" })
 })
 
-
-//User-specific data filtering using authentication context
+// Get my favourites
 router.get("/favourites/me", authMiddleware, (req, res) => {
-  const userId = req.user.id  //identify the user
+  const userId = req.user.id
 
-  const myFavouriteRecords = favourites.filter(fav => fav.userId === userId) //get favorites of that user
+  const myFavouriteRecords = favourites.filter(fav => fav.userId === userId)
 
-  const favouritePropertyIds = myFavouriteRecords.map(fav => fav.propertyId) ///get only the property id
+  const favouritePropertyIds = myFavouriteRecords.map(fav => fav.propertyId)
 
   const myFavouriteProperties = properties.filter(property =>
     favouritePropertyIds.includes(property.id)
-  )   //get full property detail
+  )
 
-  return res.status(200).json({
-    message: "My favourites fetched successfully",
-    favourites: myFavouriteProperties
-  })
+  return res.status(200).json(myFavouriteProperties)
 })
+
+// Remove from favourites
+router.delete("/:id/favourite", authMiddleware, (req, res) => {
+  const userId = req.user.id
+  const propertyId = Number(req.params.id)
+
+  const favouriteIndex = favourites.findIndex(
+    fav => fav.userId === userId && fav.propertyId === propertyId
+  )
+
+  if (favouriteIndex === -1) {
+    return res.status(404).json({ message: "Favourite not found" })
+  }
+
+  favourites.splice(favouriteIndex, 1)
+
+  return res.status(200).json({ message: "Removed from favourites" })
+})
+
 export default router

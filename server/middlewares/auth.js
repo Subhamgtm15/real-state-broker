@@ -20,6 +20,7 @@ const authMiddleware = (req, res, next) => {
     const decoded = jwt.verify(token, JWT_SECRET)
 
     req.user = decoded
+    console.log(decoded);
     next()
   } catch (error) {
     console.log("AUTH ERROR:", error.message)
