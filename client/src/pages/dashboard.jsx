@@ -14,31 +14,51 @@ export default function Main({ onLogout }) {
   const [favourites, setFavourites] = useState([])
   const [activeSection, setActiveSection] = useState("main")
   const [properties, setProperties] = useState([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [favLoading, setFavLoading] = useState(false)
 
-  // 🔥 Fetch properties from backend
   useEffect(() => {
-    async function fetchProperties() {
+    async function fetchData() {
       try {
         setLoading(true)
-        const response = await api.get("/properties")
-        setProperties(response.data)
+
+        const [propertiesRes, favouritesRes] = await Promise.all([
+          api.get("/properties"),
+          api.get("/properties/favourites/me"),
+        ])
+
+        setProperties(propertiesRes.data)
+
+        // store only favourite property ids
+        const favouriteIds = favouritesRes.data.map((property) => property.id)
+        setFavourites(favouriteIds)
       } catch (error) {
-        console.log("Error fetching properties:", error)
+        console.log("Error fetching data:", error)
       } finally {
         setLoading(false)
       }
     }
 
-    fetchProperties()
+    fetchData()
   }, [])
 
-  function handleToggleFavourite(propertyId) {
-    setFavourites((prev) =>
-      prev.includes(propertyId)
-        ? prev.filter((id) => id !== propertyId)
-        : [...prev, propertyId]
-    )
+  async function handleToggleFavourite(propertyId) {
+    try {
+      setFavLoading(true)
+
+      if (favourites.includes(propertyId)) {
+        await api.delete(`/properties/${propertyId}/favourite`)
+        setFavourites((prev) => prev.filter((id) => id !== propertyId))
+      } else {
+        await api.post(`/properties/${propertyId}/favourite`)
+        setFavourites((prev) => [...prev, propertyId])
+      }
+    } catch (error) {
+      console.log("Error updating favourite:", error)
+      alert(error.response?.data?.message || "Could not update favourite")
+    } finally {
+      setFavLoading(false)
+    }
   }
 
   const favouriteProperties = properties.filter((property) =>
@@ -55,41 +75,47 @@ export default function Main({ onLogout }) {
 
   return (
     <div className="min-h-screen bg-gray-100">
+<div className="flex items-center justify-between bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4 shadow-lg">
+  
+  <h1 className="text-2xl font-bold text-white tracking-wide">
+    🏠 RealEstate 
+  </h1>
+
+  <div className="flex items-center gap-4">
+    
+    {/* 👤 User Info */}
+    <div className="flex items-center gap-3 rounded-xl bg-white/10 px-4 py-2 backdrop-blur-md">
       
-      {/* 🔹 Top Bar */}
-      <div className="flex items-center justify-between bg-white px-6 py-4 shadow">
-        <h1 className="text-xl font-bold text-gray-800">Dashboard</h1>
-
-        <div className="flex items-center gap-4">
-          <div className="text-right">
-            <p className="font-semibold text-gray-800">
-              {user?.name || "User"}
-            </p>
-            <p className="text-sm capitalize text-gray-500">
-              {user?.role || "buyer"}
-            </p>
-          </div>
-
-          <button
-            onClick={onLogout}
-            className="rounded-lg bg-red-500 px-4 py-2 text-white transition hover:bg-red-600"
-          >
-            Logout
-          </button>
-        </div>
+      {/* Avatar */}
+      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-blue-600 font-bold">
+        {user?.name?.[0]?.toUpperCase() || "U"}
       </div>
 
-      {/* 🔹 Content */}
+      {/* Name + Role */}
+      <div className="text-right">
+        <p className="font-semibold text-white">
+          {user?.name || "User"}
+        </p>
+        <p className="text-xs capitalize text-blue-100">
+          {user?.role || "buyer"}
+        </p>
+      </div>
+    </div>
+
+    {/* 🚪 Logout Button */}
+    <button
+      onClick={onLogout}
+      className="rounded-lg bg-white px-4 py-2 font-medium text-blue-600 shadow-md transition hover:bg-gray-100"
+    >
+      Logout
+    </button>
+  </div>
+</div>
+
       <div className="p-6">
         <h2 className="mb-2 text-2xl font-bold text-gray-800">
           Welcome, {user?.name || "User"}
         </h2>
-
-        <p className="mb-6 text-gray-600">
-          Browse available properties and add them to your favourites.
-        </p>
-
-        {/* 🔹 Tabs */}
         <div className="mb-6 flex gap-4">
           <button
             onClick={() => setActiveSection("main")}
@@ -114,7 +140,10 @@ export default function Main({ onLogout }) {
           </button>
         </div>
 
-        {/* 🔹 Main Section */}
+        {favLoading && (
+          <p className="mb-4 text-sm text-gray-500">Updating favourites...</p>
+        )}
+
         {activeSection === "main" && (
           <div>
             <h3 className="mb-4 text-xl font-semibold text-gray-800">
@@ -134,7 +163,6 @@ export default function Main({ onLogout }) {
           </div>
         )}
 
-        {/* 🔹 Favourite Section */}
         {activeSection === "favourites" && (
           <div>
             <h3 className="mb-4 text-xl font-semibold text-gray-800">
