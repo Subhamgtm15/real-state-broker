@@ -2,10 +2,19 @@
 
 ## Overview
 
-This project is a simple buyer portal for a real estate broker.
+This project is a simple full-stack buyer portal for a real estate broker.
 It allows users to register, login, and manage their favourite properties.
 
-The main goal was to implement authentication and a favourites system with proper backend and frontend integration.
+The main focus of this assignment was to implement authentication, protected APIs, and a user-specific favourites system with proper backend–frontend integration.
+
+---
+
+## Live Demo
+
+* **Frontend (Vercel):** https://real-state-broker.vercel.app
+* **Backend (Render):** https://real-state-broker.onrender.com
+
+> Note: Backend is hosted on Render free tier, so first request may take a few seconds.
 
 ---
 
@@ -13,24 +22,24 @@ The main goal was to implement authentication and a favourites system with prope
 
 * User registration and login (email + password)
 * JWT-based authentication
-* Protected routes (only logged-in users can access dashboard)
-* View list of properties
-* Add/remove properties to favourites
-* Each user can only see their own favourites
-* Favourites are stored in database (MongoDB)
-* Basic UI with React + Tailwind
+* Protected routes (only authenticated users can access dashboard)
+* View list of available properties
+* Add / remove properties from favourites
+* Each user can only access their own favourites
+* Favourites persist across refresh, logout, and login
+* Clean UI built with React and Tailwind CSS
 
 ---
 
 ## Tech Stack
 
-**Frontend**
+### Frontend
 
 * React (Vite)
 * Tailwind CSS
 * Axios
 
-**Backend**
+### Backend
 
 * Node.js
 * Express.js
@@ -40,13 +49,13 @@ The main goal was to implement authentication and a favourites system with prope
 
 ---
 
-## How to run the project
+## How to run locally
 
 ### 1. Clone the repository
 
 ```bash
-git clone <your-repo-link>
-cd project-folder
+git clone https://github.com/Subhamgtm15/real-state-broker.git
+cd real-state-broker
 ```
 
 ---
@@ -58,10 +67,12 @@ cd server
 npm install
 ```
 
-Make sure MongoDB is running locally:
+Create a `.env` file inside `/server`:
 
-```bash
-mongodb://localhost:27017/real_estate_db
+```env
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_secret_key
+CLIENT_URL=http://localhost:5173
 ```
 
 Start backend:
@@ -92,11 +103,11 @@ http://localhost:5173
 
 1. Register a new user
 2. Login with email and password
-3. You will be redirected to dashboard
-4. View all properties
-5. Click "Add to Favourite"
-6. Switch to "Favourites" tab to see saved properties
-7. Logout and login again → favourites will still be there
+3. Access dashboard
+4. Browse properties
+5. Add properties to favourites
+6. Switch to "Favourites" tab
+7. Refresh or logout → login again → favourites remain saved
 
 ---
 
@@ -116,25 +127,40 @@ http://localhost:5173
 
 ---
 
-## Notes
+## Security & Design Notes
 
-* Passwords are securely hashed using bcrypt
-* JWT is used for authentication
-* Users cannot access or modify other users’ favourites
-* Favourites are persisted in MongoDB (not in-memory)
+* Passwords are hashed using bcrypt before storing
+* JWT is used for authentication and route protection
+* User-specific data is enforced using `req.user.id` from token
+* Duplicate favourites are prevented at database level
+* Backend validates input and handles errors properly
+
+---
+
+## Deployment
+
+* **Frontend:** Vercel
+* **Backend:** Render
+* **Database:** MongoDB Atlas
+
+Environment variables are used for secure configuration across environments.
 
 ---
 
 ## Future Improvements
 
 * Store properties in database instead of static file
-* Add search and filtering
-* Improve UI (animations, better feedback messages)
+* Add search, filtering, and sorting
+* Add loading states and better UI feedback (toasts)
+* Improve mobile responsiveness
+* Add role-based access (admin features)
 
 ---
 
 ## Conclusion
 
-This project demonstrates a basic full-stack workflow including authentication, protected APIs, database integration, and frontend interaction with backend services.
+This project demonstrates a complete full-stack workflow including authentication, protected APIs, database persistence, and deployment.
+
+It reflects how a basic real-world application handles user-specific data securely and efficiently.
 
 ---
