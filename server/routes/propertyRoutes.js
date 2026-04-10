@@ -16,6 +16,10 @@ router.post("/:id/favourite", authMiddleware, async (req, res) => {
     const userId = req.user.id
     const propertyId = Number(req.params.id)
 
+    console.log("POST favourite route hit")
+    console.log("req.user:", req.user)
+    console.log("propertyId:", propertyId)
+
     const property = properties.find((p) => p.id === propertyId)
 
     if (!property) {
@@ -27,8 +31,9 @@ router.post("/:id/favourite", authMiddleware, async (req, res) => {
     if (existingFavourite) {
       return res.status(400).json({ message: "Already in favourites" })
     }
-
-    await Favourite.create({ userId, propertyId })
+    
+    const createdFavourite = await Favourite.create({ userId, propertyId })
+    console.log("✅ SAVED:", createdFavourite)
 
     return res.status(201).json({ message: "Added to favourites" })
   } catch (error) {
