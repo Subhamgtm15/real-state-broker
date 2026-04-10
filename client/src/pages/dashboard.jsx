@@ -75,7 +75,7 @@ export default function Main({ onLogout }) {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-dvh bg-neutral-50">
       <Navbar user={user} onLogout={onLogout} />
 
       <div className="pt-20 px-6 pb-6 max-w-7xl mx-auto">
