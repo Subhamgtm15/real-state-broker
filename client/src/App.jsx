@@ -10,6 +10,7 @@ function App() {
 
   function logout() {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     navigate("/login");
   }
 
