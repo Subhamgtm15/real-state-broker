@@ -6,7 +6,7 @@ export default function PropertyCard({
   isFavourite,
 }) {
   return (
-    <div className="group overflow-hidden rounded-2xl bg-white shadow-md transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+    <div className="group overflow-hidden rounded-xl bg-white border border-gray-200 transition-shadow hover:shadow-md">
       
       {/* 🔹 Image Section */}
       <div className="relative">
@@ -21,7 +21,7 @@ export default function PropertyCard({
           onClick={() => onToggleFavourite(property.id)}
           className={`absolute right-3 top-3 rounded-full p-2 backdrop-blur-md transition ${
             isFavourite
-              ? "bg-red-500 text-white"
+              ? "bg-neutral-900 text-white"
               : "bg-white/70 text-gray-700 hover:bg-white"
           }`}
         >
@@ -38,16 +38,16 @@ export default function PropertyCard({
         
         {/* Title + Location */}
         <div>
-          <h3 className="text-lg font-bold text-slate-800 line-clamp-1">
+          <h3 className="text-lg font-semibold text-gray-900 line-clamp-1">
             {property.title}
           </h3>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-gray-400">
             {property.location}
           </p>
         </div>
 
         {/* Price */}
-        <p className="text-xl font-semibold text-blue-600">
+        <p className="text-xl font-semibold text-neutral-900">
           NPR {property.price.toLocaleString()}
         </p>
 
@@ -56,8 +56,8 @@ export default function PropertyCard({
           onClick={() => onToggleFavourite(property.id)}
           className={`w-full rounded-lg px-4 py-2 font-medium transition ${
             isFavourite
-              ? "bg-red-500 text-white hover:bg-red-600"
-              : "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:opacity-90"
+              ? "bg-neutral-200 text-neutral-700 hover:bg-neutral-300"
+              : "bg-neutral-900 text-white hover:bg-neutral-800"
           }`}
         >
           {isFavourite ? "Remove Favourite" : "Add to Favourite"}

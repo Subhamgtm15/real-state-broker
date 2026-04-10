@@ -75,32 +75,37 @@ export default function Main({ onLogout }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-neutral-50">
       <Navbar user={user} onLogout={onLogout} />
 
-      <div className="p-6">
-        <h2 className="mb-2 text-2xl font-bold text-gray-800">
-          Welcome, {user?.name || "User"}
-        </h2>
-        <div className="mb-6 flex gap-4">
+      <div className="pt-20 px-6 pb-6 max-w-7xl mx-auto">
+        <div className="mt-6 mb-5">
+          <h2 className="text-2xl font-semibold text-gray-900">
+            Welcome, {user?.name || "User"}
+          </h2>
+          <p className="text-sm text-gray-400 mt-0.5">Browse and save your favourite properties</p>
+        </div>
+        <div className="mb-6 flex gap-2 border-b border-gray-200">
           <button
             onClick={() => setActiveSection("main")}
-            className={`rounded-lg px-4 py-2 font-medium transition ${activeSection === "main"
-                ? "bg-blue-600 text-white"
-                : "bg-white text-gray-700 shadow"
-              }`}
+            className={`px-4 py-2 text-sm font-medium transition border-b-2 -mb-px ${
+              activeSection === "main"
+                ? "border-gray-900 text-gray-900"
+                : "border-transparent text-gray-400 hover:text-gray-700"
+            }`}
           >
-            Main
+            All Properties
           </button>
 
           <button
             onClick={() => setActiveSection("favourites")}
-            className={`rounded-lg px-4 py-2 font-medium transition ${activeSection === "favourites"
-                ? "bg-blue-600 text-white"
-                : "bg-white text-gray-700 shadow"
-              }`}
+            className={`px-4 py-2 text-sm font-medium transition border-b-2 -mb-px ${
+              activeSection === "favourites"
+                ? "border-gray-900 text-gray-900"
+                : "border-transparent text-gray-400 hover:text-gray-700"
+            }`}
           >
-            Favourites
+            Saved
           </button>
         </div>
 
@@ -110,10 +115,6 @@ export default function Main({ onLogout }) {
 
         {activeSection === "main" && (
           <div>
-            <h3 className="mb-4 text-xl font-semibold text-gray-800">
-              All Properties
-            </h3>
-
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {properties.map((property) => (
                 <PropertyCard
@@ -129,10 +130,6 @@ export default function Main({ onLogout }) {
 
         {activeSection === "favourites" && (
           <div>
-            <h3 className="mb-4 text-xl font-semibold text-gray-800">
-              Favourite Properties
-            </h3>
-
             {favouriteProperties.length === 0 ? (
               <p className="text-gray-600">No favourite properties yet.</p>
             ) : (
