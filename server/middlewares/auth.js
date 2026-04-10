@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken"
-const JWT_SECRET = process.env.JWT_SECRET
 
 const authMiddleware = (req, res, next) => {
   try {
@@ -17,7 +16,7 @@ const authMiddleware = (req, res, next) => {
       return res.status(401).json({message: "Invalid token format"})
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET)
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
 
     req.user = decoded
     console.log(decoded);

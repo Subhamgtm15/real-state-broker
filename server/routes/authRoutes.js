@@ -4,8 +4,6 @@ import jwt from "jsonwebtoken"
 import User from "../models/User.js"
 
 const router = express.Router()
-const JWT_SECRET = process.env.JWT_SECRET
-
 //register 
 router.post("/register", async (req, res) => {
   try {
@@ -72,8 +70,10 @@ router.post("/login", async (req, res) => {
     }
     //generate token
     const token = jwt.sign(
-      { id: userExist._id, email: userExist.email, role: userExist.role, name: userExist.name },
-      JWT_SECRET,
+      { id: userExist._id, email: userExist.email, role: userExist.role, name: userExist.name },  //jwt has 3 parts: header, payload, signature. here we are putting user info in payload, which can be accessed in frontend and backend
+
+      //anyone can decode the token so never put password on payload, but we can put user id, email, role, name etc. which can be used in frontend and backend to show user info and also to check role based access control in backend
+      process.env.JWT_SECRET,
       { expiresIn: "1h" }
     )
 
